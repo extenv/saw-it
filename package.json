@@ -1,0 +1,19 @@
+{
+  "name": "saw-it",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "scripts": {
+    "saw-it": "bun run index.ts",
+    "prod": "bun build index.ts --outfile dist/index.js --target node"
+  },
+  "bin": {
+    "saw-it": "./dist/index.js"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}
