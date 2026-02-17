@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-import { readdirSync, statSync, mkdirSync, writeFileSync } from "fs";
+import { readdirSync, statSync, mkdirSync, writeFileSync, existsSync } from "fs";
 import { join, dirname } from "path";
 
 /**
@@ -55,6 +55,23 @@ if (!folder || folder === "-h" || folder === "--help") {
   process.exit(0);
 }
 
+// === NEW: check folder exists ===
+if (!existsSync(folder)) {
+  console.error(`❌ Folder not found: ${folder}`);
+  process.exit(1);
+}
+
+// Optional: check is directory
+try {
+  if (!statSync(folder).isDirectory()) {
+    console.error(`❌ Not a directory: ${folder}`);
+    process.exit(1);
+  }
+} catch (err) {
+  console.error(`❌ Cannot access folder: ${folder}`);
+  process.exit(1);
+}
+
 // Generate tree output
 const lines: string[] = [];
 lines.push(folder + "/");
@@ -68,18 +85,13 @@ const output = lines.join("\n");
  * - If stdout is redirected → write to file
  */
 if (process.stdout.isTTY) {
-  // Normal terminal output
   console.log(output);
 } else {
-  // Redirected output (e.g: > output/tree.txt)
   const outputPath = (process.stdout as any).path;
 
   if (outputPath) {
-    // Ensure target directory exists
     const dir = dirname(outputPath);
     mkdirSync(dir, { recursive: true });
-
-    // Overwrite file
     writeFileSync(outputPath, output);
   }
 }
